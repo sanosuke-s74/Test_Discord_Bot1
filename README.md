@@ -30,6 +30,7 @@ Place access token into auth.json. This is included in the `.gitignore`, so your
 ## Step5
 In Terminal, navigate to bot's directory and run:
 ```
+npm install discord.io winston -save
 npm install https://github.com/woor/discord.io/tarball/gateway_v6
 ```
 
