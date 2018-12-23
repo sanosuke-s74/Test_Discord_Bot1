@@ -10,7 +10,7 @@ Windows:
 Download from https://nodejs.org/en/download/
 
 ## Step 2
-Log into discordapp.com/developers/applications/me after creating a login.
+Log into [discordapp.com/developers/applications/me](discordapp.com/developers/applications/me) after creating a login.
 Create an app and grab access token.
 
 ## Step 3
