@@ -24,7 +24,8 @@ auth.json
 package.json
 bot.js
 ```
-Place access token into auth.json. Do NOT commit it with access token.
+If pulling from repo, you'll get `auth.json.dist`. Rename this to `auth.json`.
+Place access token into auth.json. This is included in the `.gitignore`, so your token won't be commited.
 
 ## Step5
 In Terminal, navigate to bot's directory and run:
