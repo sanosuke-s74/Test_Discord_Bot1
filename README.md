@@ -24,7 +24,7 @@ auth.json
 package.json
 bot.js
 ```
-If pulling from repo, you'll get `auth.json.dist`. Rename this to `auth.json`.
+If pulling from repo, you'll get `auth.json.dist`. Make a copy of this and name it `auth.json`.
 Place access token into auth.json. This is included in the `.gitignore`, so your token won't be commited.
 
 ## Step5
