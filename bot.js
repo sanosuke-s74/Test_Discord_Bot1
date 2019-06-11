@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-const r = require('./diceroll');
+const dice = require('./diceroll');
+const twitch = require('./twitchClips');
 const Discord = require('discord.io');
 const logger = require('winston');
 const auth = require('./auth.json');
@@ -20,6 +21,7 @@ bot.on('ready', async (evt) => {
     logger.info(`${bot.username} - (${bot.id})`);
 });
 bot.on('message', async (user, userID, channelID, message, evt) => {
+    let msgOutput = '';
     // Our bot needs to know if it will execute a command
     // It will listen for messages that will start with `!`
     if (message.substring(0, 1) == '!') {
@@ -40,15 +42,26 @@ bot.on('message', async (user, userID, channelID, message, evt) => {
                 break;
 
             case '2diceroll':
-                let diceType = Math.floor(args[0].substr(1));
-                let numDiceThrows = Math.floor(parseInt(args[1], 10));
-                let msgOutput = r.diceRoll(diceType, numDiceThrows, user);
+                const diceType = Math.floor(args[0].substr(1));
+                const numDiceThrows = Math.floor(parseInt(args[1], 10));
+                msgOutput = await dice.diceRoll(diceType, numDiceThrows, user);
             
                 bot.sendMessage({
                     to: channelID,
                     message: msgOutput
                 });
                 break;
+
+            case '2test':
+                const gameName = args.join(' ');
+                msgOutput = await twitch.twitchClips(gameName, user);
+
+                bot.sendMessage({
+                    to: channelID,
+                    message: msgOutput
+                });
+                break;
+
         }
     }
 });

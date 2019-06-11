@@ -1,4 +1,4 @@
-function diceRoll (type, numThrow, user) {
+async function diceRoll (type, numThrow, user) {
     let message = '';
     if (type <= 0 || !Number.isInteger(type)) {
         type = 6;
