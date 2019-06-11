@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const r = require('./diceroll');
 const Discord = require('discord.io');
 const logger = require('winston');
 const auth = require('./auth.json');
@@ -37,33 +38,16 @@ bot.on('message', async (user, userID, channelID, message, evt) => {
                     message: `Pong! https://cdn.discordapp.com/avatars/${userID}/a_${avatarID}.png`
                 });
                 break;
-            // Just add any case commands if you want to..
+
             case '2diceroll':
-                let msgOutput = '';
                 let diceType = Math.floor(args[0].substr(1));
-                if (diceType <= 0 || !Number.isInteger(diceType)) {
-                    diceType = 6;
-                    msgOutput = `${msgOutput}Invalid number for dice type given. Set to 6\n`;
-                }
                 let numDiceThrows = Math.floor(parseInt(args[1], 10));
-                if (numDiceThrows <= 0 || numDiceThrows > 10 || !Number.isInteger(numDiceThrows)) {
-                    numDiceThrows = 5;
-                    msgOutput = `${msgOutput}Invalid number of dice throws given. Set to 5\n`;
-                }
-
-                msgOutput = `${msgOutput}${user.toString()} is throwing a d${diceType.toString()} ${numDiceThrows.toString()} time(s)\n`;
-
-                for (let x = 0; x < numDiceThrows; x++) {
-                    let dicenum = Math.floor(Math.random() * diceType) + 1;
-                    msgOutput = `${msgOutput}Throw #${(x + 1).toString()}: ${dicenum.toString()}\n`;
-                }
-
+                let msgOutput = r.diceRoll(diceType, numDiceThrows, user);
+            
                 bot.sendMessage({
                     to: channelID,
                     message: msgOutput
                 });
-
-                console.log(msgOutput);
                 break;
         }
     }

@@ -39,3 +39,19 @@ Run bot from terminal:
 ```
 node bot.js
 ```
+
+##Notes on creating service on Ubuntu EC2 instance
+create bot.service file (or pull from repo)
+move file to /etc/systemd/system directory
+run following commands
+`sudo systemctl start bot.service` to run bot in background
+`sudo systemctl enable bot.service` to run on boot
+`sudo systemctl status bot.service` to check current status
+`sudo systemctl restart bot.service` to force restart
+`sudo systemctl stop bot.service` to stop the bot
+`journalctl -u bot.service` to see the logs of the bot service
+
+**Might possibly need to update the sudoers file to enable these things**
+`sudo visudo`
+add line similar to the following
+`ubuntu ALL=(ALL) NOPASSWD: /usr/bin/systemctl start bot.service`

@@ -1,0 +1,14 @@
+[Unit]
+Description=Test Discord Bot
+
+[Service]
+ExecStart=/usr/bin/node /home/ubuntu/Test_Discord_Bot1/bot.js
+Restart=always
+User=nobody
+Group=nogroup
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+WorkingDirectory=/home/ubuntu/Test_Discord_Bot1
+
+[Install]
+WantedBy=multi-user.target
