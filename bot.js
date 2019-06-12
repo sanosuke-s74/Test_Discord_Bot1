@@ -45,14 +45,14 @@ bot.on('message', async (user, userID, channelID, message, evt) => {
                 const diceType = Math.floor(args[0].substr(1));
                 const numDiceThrows = Math.floor(parseInt(args[1], 10));
                 msgOutput = await dice.diceRoll(diceType, numDiceThrows, user);
-            
+
                 bot.sendMessage({
                     to: channelID,
                     message: msgOutput
                 });
                 break;
 
-            case '2test':
+            case '2twitch':
                 const gameName = args.join(' ');
                 msgOutput = await twitch.twitchClips(gameName, user);
 
