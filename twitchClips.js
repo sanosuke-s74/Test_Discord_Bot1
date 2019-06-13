@@ -9,9 +9,9 @@ const axios = require('axios');
  */
 async function twitchClips(game, user) {
     let gameTitle = game;
-    const randClip = Math.floor(Math.random() * 100) + 1;
+    const randClip = Math.floor(Math.random() * 100);
     const turnClipPage = randClip % 2;
-    const randGame = Math.floor(Math.random() * 100) + 1;
+    const randGame = Math.floor(Math.random() * 100);
     const turnGamePage = randGame % 2;
     let message = '';
     let gameResponse;
