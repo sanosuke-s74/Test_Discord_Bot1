@@ -24,15 +24,15 @@ bot.on('message', async (user, userID, channelID, message, evt) => {
     let msgOutput = '';
     // Our bot needs to know if it will execute a command
     // It will listen for messages that will start with `!`
-    if (message.substring(0, 1) == '!') {
-        let args = message.substring(1).split(' ');
+    if (message.substring(0, 2) == '!2') {
+        let args = message.substring(2).split(' ');
         const cmd = args[0];
 
         args = args.splice(1);
 
         switch (cmd.toLowerCase()) {
             // !ping
-            case '2ping':
+            case 'ping':
                 // console.log(bot);
                 const avatarID = bot.users[userID].avatar;
                 bot.sendMessage({
@@ -41,7 +41,7 @@ bot.on('message', async (user, userID, channelID, message, evt) => {
                 });
                 break;
 
-            case '2diceroll':
+            case 'diceroll':
                 const diceType = Math.floor(args[0].substr(1));
                 const numDiceThrows = Math.floor(parseInt(args[1], 10));
                 msgOutput = await dice.diceRoll(diceType, numDiceThrows, user);
@@ -52,9 +52,17 @@ bot.on('message', async (user, userID, channelID, message, evt) => {
                 });
                 break;
 
-            case '2twitch':
+            case 'twitch':
                 const gameName = args.join(' ');
                 msgOutput = await twitch.twitchClips(gameName, user);
+
+                bot.sendMessage({
+                    to: channelID,
+                    message: msgOutput
+                });
+                break;
+            default:
+                msgOutput = `${msgOutput}Hello! I am Test Bot!\nHere is a list of my current commands:\n    !2ping  -- this returns the word Pong! with your profile picture\n    !2diceroll  {dice type} {number of dice}  -- this will do a dice roll and return the results. Example: '!2diceroll d20 6' will throw 6 d20s\n    !2twitch {name of game}  -- this will return a random game clip from Twitch from the game specified. If you do 'whatever' as the name of the game a random game is chosen.`
 
                 bot.sendMessage({
                     to: channelID,
