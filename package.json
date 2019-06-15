@@ -6,6 +6,7 @@
     "author": "Abel T",
     "dependencies": {
         "axios": "^0.19.0",
-        "discord.js": "^11.5.1"
+        "discord.js": "^11.5.1",
+        "eslint": "^5.16.0"
     }
 }
