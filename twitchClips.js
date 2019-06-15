@@ -1,4 +1,4 @@
-const auth = require('./auth.json');
+const { twitchClientId } = require('./config.json');
 const axios = require('axios');
 
 /**
@@ -10,9 +10,9 @@ const axios = require('axios');
 async function twitchClips(game, user) {
     let gameTitle = game;
     const randClip = Math.floor(Math.random() * 100);
-    const turnClipPage = randClip % 2;
+    // const turnClipPage = randClip % 2;
     const randGame = Math.floor(Math.random() * 100);
-    const turnGamePage = randGame % 2;
+    // const turnGamePage = randGame % 2;
     let message = '';
     let gameResponse;
     let gameId;
@@ -21,17 +21,10 @@ async function twitchClips(game, user) {
         gameResponse = await axios(`https://api.twitch.tv/helix/games/top?first=100`, {
             method: 'GET',
             headers: {
-                'Client-ID': auth.twitchClientId
+                'Client-ID': twitchClientId
             }
         });
-        if (turnGamePage === 1) {
-            gameResponse = await axios(`https://api.twitch.tv/helix/games/top?first=100&after=${gameResponse.data.pagination.cursor}`, {
-                method: 'GET',
-                headers: {
-                    'Client-ID': auth.twitchClientId
-                }
-            });
-        }
+
         gameId = gameResponse.data.data[randGame].id;
         gameTitle = gameResponse.data.data[randGame].name;
 
@@ -40,7 +33,7 @@ async function twitchClips(game, user) {
             gameResponse = await axios(`https://api.twitch.tv/helix/games?name=${gameTitle}`, {
                 method: 'GET',
                 headers: {
-                    'Client-ID': auth.twitchClientId
+                    'Client-ID': twitchClientId
                 }
             });
             gameId = gameResponse.data.data[0].id;
@@ -58,17 +51,10 @@ async function twitchClips(game, user) {
         clipResponse = await axios(`https://api.twitch.tv/helix/clips?game_id=${gameId}&first=100`, {
             method: 'GET',
             headers: {
-                'Client-ID': auth.twitchClientId
+                'Client-ID': twitchClientId
             }
         });
-        if (turnClipPage === 1) {
-            clipResponse = await axios(`https://api.twitch.tv/helix/clips?game_id=${gameId}&first=100&after=${clipResponse.data.pagination.cursor}`, {
-                method: 'GET',
-                headers: {
-                    'Client-ID': auth.twitchClientId
-                }
-            });
-        }
+
     } catch (err) {
         console.log(err);
     }

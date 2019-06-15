@@ -1,31 +1,27 @@
 #!/usr/bin/env node
 const dice = require('./diceroll');
 const twitch = require('./twitchClips');
-const Discord = require('discord.io');
-const logger = require('winston');
+const Discord = require('discord.js');
 const auth = require('./auth.json');
-// Configure logger settings
-logger.remove(logger.transports.Console);
-logger.add(new logger.transports.Console, {
-    colorize: true
-});
-logger.level = 'debug';
+const { token, prefix } = require('./config.json');
+
 // Initialize Discord Bot
-const bot = new Discord.Client({
-    token: auth.token,
-    autorun: true
+const bot = new Discord.Client({});
+bot.once('ready', async () => {
+    // logger.info('Connected');
+    // logger.info('Logged in as: ');
+    // logger.info(`${bot.username} - (${bot.id})`);
+    console.log('Ready!');
 });
-bot.on('ready', async (evt) => {
-    logger.info('Connected');
-    logger.info('Logged in as: ');
-    logger.info(`${bot.username} - (${bot.id})`);
-});
-bot.on('message', async (user, userID, channelID, message, evt) => {
+
+bot.login(token);
+
+bot.on('message', async message => {
     let msgOutput = '';
     // Our bot needs to know if it will execute a command
     // It will listen for messages that will start with `!`
-    if (message.substring(0, 2) == '!2') {
-        let args = message.substring(2).split(' ');
+    if (message.content.substring(0, 2) == prefix) {
+        let args = message.content.substring(2).split(' ');
         const cmd = args[0];
 
         args = args.splice(1);
@@ -33,41 +29,29 @@ bot.on('message', async (user, userID, channelID, message, evt) => {
         switch (cmd.toLowerCase()) {
             // !ping
             case 'ping':
-                // console.log(bot);
-                const avatarID = bot.users[userID].avatar;
-                bot.sendMessage({
-                    to: channelID,
-                    message: `Pong! https://cdn.discordapp.com/avatars/${userID}/a_${avatarID}.png`
-                });
+                const user = await bot.fetchUser(message.author.id);
+                message.channel.send(`Pong! https://cdn.discordapp.com/avatars/${message.author.id}/a_${avatar.avatar}.png`);
                 break;
 
             case 'diceroll':
                 const diceType = Math.floor(args[0].substr(1));
                 const numDiceThrows = Math.floor(parseInt(args[1], 10));
-                msgOutput = await dice.diceRoll(diceType, numDiceThrows, user);
+                msgOutput = await dice.diceRoll(diceType, numDiceThrows, message.author.username);
 
-                bot.sendMessage({
-                    to: channelID,
-                    message: msgOutput
-                });
+                message.channel.send(msgOutput);
                 break;
 
             case 'twitch':
                 const gameName = args.join(' ');
-                msgOutput = await twitch.twitchClips(gameName, user);
+                msgOutput = await twitch.twitchClips(gameName, message.author.username);
 
-                bot.sendMessage({
-                    to: channelID,
-                    message: msgOutput
-                });
+
+                message.channel.send(msgOutput);
                 break;
             default:
                 msgOutput = `${msgOutput}Hello! I am Test Bot!\nHere is a list of my current commands:\n    !2ping  -- this returns the word Pong! with your profile picture\n    !2diceroll  {dice type} {number of dice}  -- this will do a dice roll and return the results. Example: '!2diceroll d20 6' will throw 6 d20s\n    !2twitch {name of game}  -- this will return a random game clip from Twitch from the game specified. If you do 'whatever' as the name of the game a random game is chosen.`
 
-                bot.sendMessage({
-                    to: channelID,
-                    message: msgOutput
-                });
+                message.channel.send(msgOutput);
                 break;
 
         }
