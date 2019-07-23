@@ -24,7 +24,9 @@ async function twitchClips(game, user) {
 				'Client-ID': twitchClientId,
 			},
 		});
-
+		if (gameResponse.status === 429) {
+			message = `${message}Woah! Too many requests to handle! Please wait a few minutes, then try again.`;
+		}
 		gameId = gameResponse.data.data[randGame].id;
 		gameTitle = gameResponse.data.data[randGame].name;
 
@@ -37,15 +39,22 @@ async function twitchClips(game, user) {
 					'Client-ID': twitchClientId,
 				},
 			});
-			gameId = gameResponse.data.data[0].id;
+			if (gameResponse.status === 429) {
+				message = `${message}Woah! Too many requests to handle! Please wait a few minutes, then try again.`;
+			}
 		}
 		catch (err) {
 			console.log(err);
+			message = `${message}Something went wrong! Please try again`;
+			return message;
 		}
 
 		if (gameResponse.data.data.length === 0) {
 			message = `${message}No Game Found!!\nTry typing the name exactly as it appears on Twitch.`;
 			return message;
+		}
+		else {
+			gameId = gameResponse.data.data[0].id;
 		}
 	}
 
@@ -56,10 +65,14 @@ async function twitchClips(game, user) {
 				'Client-ID': twitchClientId,
 			},
 		});
-
+		if (clipResponse.status === 429) {
+			message = `${message}Woah! Too many requests to handle! Please wait a few minutes, then try again.`;
+		}
 	}
 	catch (err) {
 		console.log(err);
+		message = `${message}Something went wrong! Please try again`;
+		return message;
 	}
 
 	message = `${message}Here you go, ${user}! A random ${gameTitle} clip from Twitch!\n${clipResponse.data.data[randClip].url}`;
