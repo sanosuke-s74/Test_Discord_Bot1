@@ -1,7 +1,7 @@
 const AWS = require ('aws-sdk');
 const { twitchClientId, aws_access_key_id, aws_secret_access_key } = require('./config.json');
 const axios = require('axios');
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 /**
  * calls the Twitch API for a random clip of the game specified. If 'whatever' is passed, pull a random game from the top 200 games and get a clip of that
@@ -71,7 +71,7 @@ async function errorHandler(error, user) {
 		accessKeyId: aws_access_key_id,
       	secretAccessKey: aws_secret_access_key
 	});
-	const params = { Bucket: 'discord-bot-errors', Key: `Error ${moment().format('MMMM Do YYYY, h:mm:ss a')}.txt`, Body: `User: ${user}\nURL: ${JSON.stringify(error.config.url)}\nResponse: ${JSON.stringify(error.response.data)}`};
+	const params = { Bucket: 'discord-bot-errors', Key: `Error ${moment.tz(moment().format(), 'America/Chicago').format()}.txt`, Body: `User: ${user}\nURL: ${JSON.stringify(error.config.url)}\nResponse: ${JSON.stringify(error.response.data)}`};
 		await s3.putObject(params, (err) => {
 			if (err) {
 				console.log(err);
