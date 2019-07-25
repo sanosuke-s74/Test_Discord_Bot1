@@ -71,7 +71,8 @@ async function errorHandler(error, user) {
 		accessKeyId: aws_access_key_id,
       	secretAccessKey: aws_secret_access_key
 	});
-	const params = { Bucket: 'discord-bot-errors', Key: `Error ${moment.tz(moment().format(), 'America/Chicago').format()}.txt`, Body: `User: ${user}\nURL: ${JSON.stringify(error.config.url)}\nResponse: ${JSON.stringify(error.response.data)}`};
+	//Consider 'MM DD YYYY, HH:mm:ss' for readability
+	const params = { Bucket: 'discord-bot-errors', Key: `Error ${moment.tz(moment().format(), 'America/Chicago').format('MMMM Do YYYY, h:mm:ss a')}.txt`, Body: `User: ${user}\nURL: ${JSON.stringify(error.config.url)}\nResponse: ${JSON.stringify(error.response.data)}`};
 		await s3.putObject(params, (err) => {
 			if (err) {
 				console.log(err);
