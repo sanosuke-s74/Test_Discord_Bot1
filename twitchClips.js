@@ -1,5 +1,7 @@
+const AWS = require ('aws-sdk');
 const { twitchClientId } = require('./config.json');
 const axios = require('axios');
+const moment = require('moment');
 
 /**
  * calls the Twitch API for a random clip of the game specified. If 'whatever' is passed, pull a random game from the top 200 games and get a clip of that
@@ -10,26 +12,23 @@ const axios = require('axios');
 async function twitchClips(game, user) {
 	let gameTitle = game;
 	const randClip = Math.floor(Math.random() * 100);
-	// const turnClipPage = randClip % 2;
 	const randGame = Math.floor(Math.random() * 100);
-	// const turnGamePage = randGame % 2;
-	let message = '';
 	let gameResponse;
 	let gameId;
 	let clipResponse;
 	if (gameTitle.toLowerCase() === 'whatever') {
-		gameResponse = await axios('https://api.twitch.tv/helix/games/top?first=100', {
-			method: 'GET',
-			headers: {
-				'Client-ID': twitchClientId,
-			},
-		});
-		if (gameResponse.status === 429) {
-			message = `${message}Woah! Too many requests to handle! Please wait a few minutes, then try again.`;
+		try {
+			gameResponse = await axios('https://api.twitch.tv/helix/games/top?first=100', {
+				method: 'GET',
+				headers: {
+					'Client-ID': twitchClientId,
+				},
+			});
+			gameId = gameResponse.data.data[randGame].id;
+			gameTitle = gameResponse.data.data[randGame].name;
+		} catch (err) {
+			return errorHandler(err, user);
 		}
-		gameId = gameResponse.data.data[randGame].id;
-		gameTitle = gameResponse.data.data[randGame].name;
-
 	}
 	else {
 		try {
@@ -39,19 +38,13 @@ async function twitchClips(game, user) {
 					'Client-ID': twitchClientId,
 				},
 			});
-			if (gameResponse.status === 429) {
-				message = `${message}Woah! Too many requests to handle! Please wait a few minutes, then try again.`;
-			}
 		}
 		catch (err) {
-			console.log(err);
-			message = `${message}Something went wrong! Please try again`;
-			return message;
+			return errorHandler(err, user);
 		}
 
 		if (gameResponse.data.data.length === 0) {
-			message = `${message}No Game Found!!\nTry typing the name exactly as it appears on Twitch.`;
-			return message;
+			return `No Game Found!!\nTry typing the name exactly as it appears on Twitch.`;
 		}
 		else {
 			gameId = gameResponse.data.data[0].id;
@@ -65,19 +58,26 @@ async function twitchClips(game, user) {
 				'Client-ID': twitchClientId,
 			},
 		});
-		if (clipResponse.status === 429) {
-			message = `${message}Woah! Too many requests to handle! Please wait a few minutes, then try again.`;
-		}
 	}
 	catch (err) {
-		console.log(err);
-		message = `${message}Something went wrong! Please try again`;
-		return message;
+		return errorHandler(err, user);
 	}
+	return `Here you go, ${user}! A random ${gameTitle} clip from Twitch!\n${clipResponse.data.data[randClip].url}`;
+}
 
-	message = `${message}Here you go, ${user}! A random ${gameTitle} clip from Twitch!\n${clipResponse.data.data[randClip].url}`;
-
-	return message;
+async function errorHandler(error, user) {
+	const s3 = new AWS.S3();
+	const params = { Bucket: 'discord-bot-errors', Key: `Error ${moment().format('MMMM Do YYYY, h:mm:ss a')}.txt`, Body: `User: ${user}\nURL: ${JSON.stringify(error.config.url)}\nResponse: ${JSON.stringify(error.response.data)}`};
+		await s3.putObject(params, (err) => {
+			if (err) {
+				console.log(err);
+			}
+		});
+		if (error.response.status === 429) {
+			return `Woah! Too many requests to handle! Please wait a few minutes, then try again.`;
+		} else {
+			return `Something went wrong! Please try again`;
+		}
 }
 
 module.exports.twitchClips = twitchClips;
