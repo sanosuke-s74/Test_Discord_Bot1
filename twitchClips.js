@@ -1,5 +1,5 @@
 const AWS = require ('aws-sdk');
-const { twitchClientId } = require('./config.json');
+const { twitchClientId, aws_access_key_id, aws_secret_access_key } = require('./config.json');
 const axios = require('axios');
 const moment = require('moment');
 
@@ -67,6 +67,10 @@ async function twitchClips(game, user) {
 
 async function errorHandler(error, user) {
 	const s3 = new AWS.S3();
+	s3.config.update({
+		accessKeyId: aws_access_key_id,
+      	secretAccessKey: aws_secret_access_key
+	});
 	const params = { Bucket: 'discord-bot-errors', Key: `Error ${moment().format('MMMM Do YYYY, h:mm:ss a')}.txt`, Body: `User: ${user}\nURL: ${JSON.stringify(error.config.url)}\nResponse: ${JSON.stringify(error.response.data)}`};
 		await s3.putObject(params, (err) => {
 			if (err) {
